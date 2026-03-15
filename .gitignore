@@ -1,0 +1,4 @@
+doctor
+*.exe
+*.out
+.DS_Store
