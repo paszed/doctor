@@ -1,16 +1,40 @@
 # doctor
 
-doctor is a fast CLI tool to diagnose developer environments.
+Doctor is a CLI tool for diagnosing developer environments.
 
-Features:
-- tool version checks
-- system diagnostics
-- port checks
-- docker checks
-- auto fixes
+The goal is to help developers quickly identify problems in their local setup such as:
 
-Example:
+- missing tools
+- docker issues
+- port conflicts
+- environment configuration problems
 
-doctor diagnose
-doctor check git
-doctor fix port 3000
+## Status
+
+This project is currently under active development.
+
+## Project Structure
+
+```
+cmd/doctor
+
+internal/
+  checks/
+  cli/
+  config/
+  detect/
+  fix/
+  model/
+  report/
+  runtime/
+  state/
+  system/
+  ui/
+
+scripts/
+examples/
+```
+
+## Goal
+
+Doctor aims to provide a simple tool for inspecting and repairing developer environments.

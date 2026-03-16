@@ -1,18 +1,31 @@
-# Go
+# Go build artifacts
 bin/
+doctor
 *.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Go test
 *.test
 *.out
+coverage.out
 
-# compiled binary
-doctor
+# Go workspace
+go.work
+go.work.sum
+
+# IDE
+.vscode/
+.idea/
 
 # macOS
 .DS_Store
 
-# editor
-.vscode/
-.idea/
-
-# logs
+# Logs
 *.log
+
+# Temp
+tmp/
+
