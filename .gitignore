@@ -1,4 +1,18 @@
-doctor
+# Go
+bin/
 *.exe
+*.test
 *.out
+
+# compiled binary
+doctor
+
+# macOS
 .DS_Store
+
+# editor
+.vscode/
+.idea/
+
+# logs
+*.log

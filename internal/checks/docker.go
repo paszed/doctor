@@ -1,37 +1,32 @@
 package checks
 
 import (
-	"fmt"
 	"os/exec"
 	"strings"
+
+	"github.com/paszed/doctor/internal/model"
 )
 
-func DockerCheck() {
+func DockerCheck() model.Result {
 
-	// check docker CLI
 	cmd := exec.Command("docker", "--version")
 	out, err := cmd.Output()
 
 	if err != nil {
-		fmt.Printf("%-12s ✗ not installed\n", "docker")
-		return
+		return model.Result{
+			Name:    "docker",
+			Status:  model.Missing,
+			Message: "not installed",
+		}
 	}
 
-	// parse version
-	version := strings.SplitN(string(out), "\n", 2)[0]
+	version := strings.Split(string(out), "\n")[0]
 	version = strings.TrimPrefix(version, "Docker version ")
 	version = strings.Split(version, ",")[0]
 
-	fmt.Printf("%-12s ✓ %s\n", "docker", version)
-
-	// check docker daemon
-	cmd = exec.Command("docker", "info")
-	err = cmd.Run()
-
-	if err != nil {
-		fmt.Printf("%-12s ✗ not running\n", "daemon")
-		return
+	return model.Result{
+		Name:    "docker",
+		Status:  model.OK,
+		Message: version,
 	}
-
-	fmt.Printf("%-12s ✓ running\n", "daemon")
 }

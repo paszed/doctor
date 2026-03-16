@@ -1,4 +1,4 @@
-package checks
+package state
 
 var Issues int
 var InstalledTools int
