@@ -2,33 +2,39 @@ package checks
 
 import (
 	"os/exec"
-	"strings"
 
 	"github.com/paszed/doctor/internal/model"
 )
 
-func init() {
-	Register(CheckDocker)
-}
-
 func CheckDocker() model.Result {
 
-	cmd := exec.Command("docker", "--version")
+	path, err := exec.LookPath("docker")
 
-	out, err := cmd.Output()
 	if err != nil {
 		return model.Result{
-			Name:    "docker",
-			Status:  model.Missing,
-			Message: "not installed",
+			Name:   "docker",
+			Status: model.Missing,
 		}
 	}
 
-	version := strings.TrimSpace(string(out))
+	out, err := exec.Command("docker", "--version").Output()
+
+	if err != nil {
+		return model.Result{
+			Name:   "docker",
+			Status: model.Warning,
+			Path:   path,
+		}
+	}
 
 	return model.Result{
 		Name:    "docker",
 		Status:  model.OK,
-		Message: version,
+		Path:    path,
+		Message: string(out),
 	}
+}
+
+func init() {
+	Register(CheckDocker)
 }

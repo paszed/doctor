@@ -2,6 +2,7 @@ package checks
 
 import (
 	"sort"
+	"strings"
 	"sync"
 
 	"github.com/paszed/doctor/internal/model"
@@ -40,11 +41,13 @@ func RunAll() []model.Result {
 
 func RunOne(name string) (model.Result, bool) {
 
+	name = strings.ToLower(name)
+
 	for _, check := range registry {
 
 		result := check()
 
-		if result.Name == name {
+		if strings.ToLower(result.Name) == name {
 			return result, true
 		}
 	}

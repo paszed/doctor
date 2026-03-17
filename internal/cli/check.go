@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -23,6 +24,34 @@ func RunCheck() {
 	if !found {
 		fmt.Printf("unknown tool: %s\n", name)
 		os.Exit(1)
+	}
+
+	// handle flags
+	if len(os.Args) > 3 {
+
+		flag := os.Args[3]
+
+		switch flag {
+
+		case "--json":
+			data, err := json.MarshalIndent(result, "", "  ")
+			if err != nil {
+				fmt.Println("json error:", err)
+				os.Exit(1)
+			}
+
+			fmt.Println(string(data))
+			return
+
+		case "--version":
+			fmt.Println(result.Message)
+			return
+
+		case "--path":
+			fmt.Println(result.Path)
+			return
+
+		}
 	}
 
 	ui.PrintResults([]model.Result{result})
