@@ -7,11 +7,14 @@ import (
 
 func Run() {
 
-	if len(os.Args) < 2 {
-		printHelp()
+	if len(os.Args) < 2 ||
+		os.Args[1] == "help" ||
+		os.Args[1] == "-h" ||
+		os.Args[1] == "--help" {
+
+		RunHelp()
 		return
 	}
-
 	switch os.Args[1] {
 
 	case "diagnose":
@@ -31,6 +34,9 @@ func Run() {
 
 	case "fix":
 		RunFix()
+
+	case "help":
+		RunHelp()
 
 	default:
 		fmt.Println("Unknown command:", os.Args[1])

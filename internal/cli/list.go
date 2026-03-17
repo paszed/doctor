@@ -8,10 +8,12 @@ import (
 
 func RunList() {
 
-	fmt.Println("AVAILABLE CHECKS")
+	names := checks.Names()
+
+	fmt.Printf("AVAILABLE CHECKS (%d) \n", len(names))
 	fmt.Println("----------------")
 
-	for _, name := range checks.Names() {
+	for _, name := range names {
 		fmt.Println(name)
 	}
 }
