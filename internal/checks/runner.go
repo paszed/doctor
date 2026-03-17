@@ -35,4 +35,19 @@ func RunAll() []model.Result {
 	})
 
 	return all
+
+}
+
+func RunOne(name string) (model.Result, bool) {
+
+	for _, check := range registry {
+
+		result := check()
+
+		if result.Name == name {
+			return result, true
+		}
+	}
+
+	return model.Result{}, false
 }
