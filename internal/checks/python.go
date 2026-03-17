@@ -8,34 +8,36 @@ import (
 )
 
 func init() {
-	Register(CheckDocker)
+	Register(CheckPython)
 }
 
-func CheckDocker() model.Result {
+func CheckPython() model.Result {
 
-	_, err := exec.LookPath("docker")
+	path, err := exec.LookPath("python3")
 	if err != nil {
 		return model.Result{
-			Name:    "docker",
+			Name:    "python3",
 			Status:  model.Missing,
 			Message: "not installed",
 		}
 	}
 
-	out, err := exec.Command("docker", "--version").Output()
+	out, err := exec.Command("python3", "--version").Output()
 	if err != nil {
 		return model.Result{
-			Name:    "docker",
+			Name:    "python3",
 			Status:  model.Missing,
-			Message: "docker command failed",
+			Path:    path,
+			Message: "python command failed",
 		}
 	}
 
 	version := strings.TrimSpace(string(out))
 
 	return model.Result{
-		Name:    "docker",
+		Name:    "python3",
 		Status:  model.OK,
 		Version: version,
+		Path:    path,
 	}
 }

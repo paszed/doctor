@@ -8,34 +8,36 @@ import (
 )
 
 func init() {
-	Register(CheckDocker)
+	Register(CheckNode)
 }
 
-func CheckDocker() model.Result {
+func CheckNode() model.Result {
 
-	_, err := exec.LookPath("docker")
+	path, err := exec.LookPath("node")
 	if err != nil {
 		return model.Result{
-			Name:    "docker",
+			Name:    "node",
 			Status:  model.Missing,
 			Message: "not installed",
 		}
 	}
 
-	out, err := exec.Command("docker", "--version").Output()
+	out, err := exec.Command("node", "--version").Output()
 	if err != nil {
 		return model.Result{
-			Name:    "docker",
+			Name:    "node",
 			Status:  model.Missing,
-			Message: "docker command failed",
+			Path:    path,
+			Message: "node command failed",
 		}
 	}
 
 	version := strings.TrimSpace(string(out))
 
 	return model.Result{
-		Name:    "docker",
+		Name:    "node",
 		Status:  model.OK,
 		Version: version,
+		Path:    path,
 	}
 }

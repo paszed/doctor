@@ -16,10 +16,10 @@ func RunDiagnose() {
 
 	ui.Section("TOOLS")
 
-	results := make(chan model.Result, len(Registry))
+	results := make(chan model.Result, len(registry))
 	var wg sync.WaitGroup
 
-	for _, check := range Registry {
+	for _, check := range registry {
 		wg.Add(1)
 
 		go func(c CheckFunc) {

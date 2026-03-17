@@ -11,5 +11,7 @@ const (
 type Result struct {
 	Name    string
 	Status  Status
+	Version string
+	Path    string
 	Message string
 }

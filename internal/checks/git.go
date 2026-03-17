@@ -8,34 +8,36 @@ import (
 )
 
 func init() {
-	Register(CheckDocker)
+	Register(CheckGit)
 }
 
-func CheckDocker() model.Result {
+func CheckGit() model.Result {
 
-	_, err := exec.LookPath("docker")
+	path, err := exec.LookPath("git")
 	if err != nil {
 		return model.Result{
-			Name:    "docker",
+			Name:    "git",
 			Status:  model.Missing,
 			Message: "not installed",
 		}
 	}
 
-	out, err := exec.Command("docker", "--version").Output()
+	out, err := exec.Command("git", "--version").Output()
 	if err != nil {
 		return model.Result{
-			Name:    "docker",
+			Name:    "git",
 			Status:  model.Missing,
-			Message: "docker command failed",
+			Path:    path,
+			Message: "git command failed",
 		}
 	}
 
 	version := strings.TrimSpace(string(out))
 
 	return model.Result{
-		Name:    "docker",
+		Name:    "git",
 		Status:  model.OK,
 		Version: version,
+		Path:    path,
 	}
 }
