@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/paszed/doctor/internal/checks"
-	"github.com/paszed/doctor/internal/model"
+	"github.com/paszed/doctor/internal/state"
 	"github.com/paszed/doctor/internal/ui"
 )
 
@@ -30,26 +30,7 @@ func RunDiagnose() {
 	ui.PrintResults(results)
 
 	// Exit code calculation
-	ok := 0
-	warn := 0
-	missing := 0
-
-	for _, r := range results {
-
-		switch r.Status {
-
-		case model.OK:
-			ok++
-
-		case model.Warning:
-			warn++
-
-		case model.Missing:
-			missing++
-
-		}
-	}
-
+	_, warn, missing := state.Summary(results)
 	// Exit codes
 	if missing > 0 {
 		os.Exit(2)
