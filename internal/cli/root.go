@@ -20,6 +20,9 @@ func Run() {
 	case "check":
 		RunCheck()
 
+	case "list":
+		RunList()
+
 	case "port":
 		RunPort()
 
