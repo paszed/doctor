@@ -13,3 +13,17 @@ func Register(check CheckFunc) {
 func All() []CheckFunc {
 	return registry
 }
+
+func Names() []string {
+
+	var names []string
+
+	for _, check := range registry {
+
+		result := check()
+		names = append(names, result.Name)
+
+	}
+
+	return names
+}

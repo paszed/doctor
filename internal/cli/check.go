@@ -22,10 +22,17 @@ func RunCheck() {
 	result, found := checks.RunOne(name)
 
 	if !found {
-		fmt.Printf("unknown tool: %s\n", name)
+
+		fmt.Printf("unknown tool: %s\n\n", name)
+
+		fmt.Println("available checks:")
+
+		for _, n := range checks.Names() {
+			fmt.Printf("  %s\n", n)
+		}
+
 		os.Exit(1)
 	}
-
 	// handle flags
 	if len(os.Args) > 3 {
 
