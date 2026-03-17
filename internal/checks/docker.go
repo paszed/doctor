@@ -13,7 +13,9 @@ func init() {
 
 func CheckDocker() model.Result {
 
-	_, err := exec.LookPath("docker")
+	cmd := exec.Command("docker", "--version")
+
+	out, err := cmd.Output()
 	if err != nil {
 		return model.Result{
 			Name:    "docker",
@@ -22,20 +24,11 @@ func CheckDocker() model.Result {
 		}
 	}
 
-	out, err := exec.Command("docker", "--version").Output()
-	if err != nil {
-		return model.Result{
-			Name:    "docker",
-			Status:  model.Missing,
-			Message: "docker command failed",
-		}
-	}
-
 	version := strings.TrimSpace(string(out))
 
 	return model.Result{
 		Name:    "docker",
 		Status:  model.OK,
-		Version: version,
+		Message: version,
 	}
 }

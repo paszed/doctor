@@ -13,7 +13,9 @@ func init() {
 
 func CheckGit() model.Result {
 
-	path, err := exec.LookPath("git")
+	cmd := exec.Command("git", "--version")
+
+	out, err := cmd.Output()
 	if err != nil {
 		return model.Result{
 			Name:    "git",
@@ -22,22 +24,11 @@ func CheckGit() model.Result {
 		}
 	}
 
-	out, err := exec.Command("git", "--version").Output()
-	if err != nil {
-		return model.Result{
-			Name:    "git",
-			Status:  model.Missing,
-			Path:    path,
-			Message: "git command failed",
-		}
-	}
-
 	version := strings.TrimSpace(string(out))
 
 	return model.Result{
 		Name:    "git",
 		Status:  model.OK,
-		Version: version,
-		Path:    path,
+		Message: version,
 	}
 }

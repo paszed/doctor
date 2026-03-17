@@ -9,9 +9,9 @@ const (
 )
 
 type Result struct {
-	Name    string
-	Status  Status
-	Version string
-	Path    string
-	Message string
+	Name    string `json:"name"`
+	Status  Status `json:"status"`
+	Version string `json:"version,omitempty"`
+	Path    string `json:"path,omitempty"`
+	Message string `json:"message,omitempty"`
 }

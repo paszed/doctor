@@ -13,7 +13,9 @@ func init() {
 
 func CheckNode() model.Result {
 
-	path, err := exec.LookPath("node")
+	cmd := exec.Command("node", "--version")
+
+	out, err := cmd.Output()
 	if err != nil {
 		return model.Result{
 			Name:    "node",
@@ -22,22 +24,11 @@ func CheckNode() model.Result {
 		}
 	}
 
-	out, err := exec.Command("node", "--version").Output()
-	if err != nil {
-		return model.Result{
-			Name:    "node",
-			Status:  model.Missing,
-			Path:    path,
-			Message: "node command failed",
-		}
-	}
-
 	version := strings.TrimSpace(string(out))
 
 	return model.Result{
 		Name:    "node",
 		Status:  model.OK,
-		Version: version,
-		Path:    path,
+		Message: version,
 	}
 }

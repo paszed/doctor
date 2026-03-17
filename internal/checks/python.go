@@ -13,7 +13,9 @@ func init() {
 
 func CheckPython() model.Result {
 
-	path, err := exec.LookPath("python3")
+	cmd := exec.Command("python3", "--version")
+
+	out, err := cmd.Output()
 	if err != nil {
 		return model.Result{
 			Name:    "python3",
@@ -22,22 +24,11 @@ func CheckPython() model.Result {
 		}
 	}
 
-	out, err := exec.Command("python3", "--version").Output()
-	if err != nil {
-		return model.Result{
-			Name:    "python3",
-			Status:  model.Missing,
-			Path:    path,
-			Message: "python command failed",
-		}
-	}
-
 	version := strings.TrimSpace(string(out))
 
 	return model.Result{
 		Name:    "python3",
 		Status:  model.OK,
-		Version: version,
-		Path:    path,
+		Message: version,
 	}
 }
