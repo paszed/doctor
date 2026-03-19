@@ -27,6 +27,19 @@ func RunDiagnose() {
 		}
 	}
 
+	// --- deduplicate ---
+	seen := make(map[string]bool)
+	var unique []string
+
+	for _, name := range selected {
+		if !seen[name] {
+			seen[name] = true
+			unique = append(unique, name)
+		}
+	}
+
+	selected = unique
+
 	var results []model.Result
 
 	// --- execution ---
@@ -44,7 +57,7 @@ func RunDiagnose() {
 		}
 	}
 
-	// --- sort results (stable UX) ---
+	// --- sort results ---
 	sort.Slice(results, func(i, j int) bool {
 		return results[i].Name < results[j].Name
 	})
@@ -56,7 +69,6 @@ func RunDiagnose() {
 			fmt.Println("failed to encode json:", err)
 			os.Exit(1)
 		}
-
 		fmt.Println(string(data))
 		return
 	}
@@ -65,7 +77,7 @@ func RunDiagnose() {
 	ui.PrintResults(results)
 
 	// --- exit codes ---
-	_, warn, missing := state.Summary(results)
+	ok, warn, missing := state.Summary(results)
 
 	if missing > 0 {
 		os.Exit(2)
@@ -73,9 +85,14 @@ func RunDiagnose() {
 	if warn > 0 {
 		os.Exit(1)
 	}
+	if ok > 0 {
+		os.Exit(0)
+	}
 
 	os.Exit(0)
 }
+
+// --- helper ---
 
 func printAvailable() {
 	fmt.Println("\navailable checks:")
