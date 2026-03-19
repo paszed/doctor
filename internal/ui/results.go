@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"fmt"
-
 	"github.com/paszed/doctor/internal/model"
 )
 
@@ -22,7 +20,4 @@ func PrintResults(results []model.Result) {
 		}
 	}
 
-	Section("SUMMARY")
-
-	fmt.Printf("✓ %d/%d checks passed\n", ok, len(results))
 }

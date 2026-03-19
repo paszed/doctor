@@ -76,19 +76,26 @@ func RunDiagnose() {
 	// --- human output ---
 	ui.PrintResults(results)
 
-	// --- exit codes ---
-	ok, warn, missing := state.Summary(results)
+	// --- summary ---
+	okCount, warnCount, missingCount := state.Summary(results)
+	total := len(results)
 
-	if missing > 0 {
+	symbol := "✓"
+	if missingCount > 0 {
+		symbol = "✗"
+	} else if warnCount > 0 {
+		symbol = "!"
+	}
+
+	fmt.Printf("\nSUMMARY\n-------\n%s %d/%d checks passed\n", symbol, okCount, total)
+
+	// --- exit codes ---
+	if missingCount > 0 {
 		os.Exit(2)
 	}
-	if warn > 0 {
+	if warnCount > 0 {
 		os.Exit(1)
 	}
-	if ok > 0 {
-		os.Exit(0)
-	}
-
 	os.Exit(0)
 }
 

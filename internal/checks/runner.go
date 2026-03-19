@@ -1,79 +1,67 @@
 package checks
 
 import (
-	"sort"
-	"strings"
-	"sync"
+	"context"
+	"time"
 
 	"github.com/paszed/doctor/internal/model"
 )
 
+// default timeout per check
+const timeout = 2 * time.Second
+
+// RunAll executes all checks concurrently with timeout protection
 func RunAll() []model.Result {
-	results := make(chan model.Result, len(registry))
-	var wg sync.WaitGroup
+	ch := make(chan model.Result)
 
-	for _, check := range registry {
-		wg.Add(1)
-
-		go func(c CheckFunc) {
-			defer wg.Done()
-			results <- c()
-		}(check)
+	// launch all checks
+	for name, check := range registry {
+		go func(n string, c CheckFunc) {
+			ch <- runWithTimeout(n, c)
+		}(name, check)
 	}
 
-	wg.Wait()
-	close(results)
+	var results []model.Result
 
-	var all []model.Result
-
-	for r := range results {
-		all = append(all, r)
+	// collect results
+	for range registry {
+		results = append(results, <-ch)
 	}
 
-	sort.Slice(all, func(i, j int) bool {
-		return all[i].Name < all[j].Name
-	})
-
-	return all
+	return results
 }
 
+// RunOne executes a single check with timeout protection
 func RunOne(name string) (model.Result, bool) {
-	fn, ok := registry[strings.ToLower(name)]
+	check, ok := registry[name]
 	if !ok {
 		return model.Result{}, false
 	}
 
-	return fn(), true
+	return runWithTimeout(name, check), true
 }
 
-func List() []string {
-	var names []string
+// --- core timeout wrapper ---
 
-	for name := range registry {
-		names = append(names, name)
-	}
+func runWithTimeout(name string, check CheckFunc) model.Result {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
-	sort.Strings(names)
-	return names
-}
+	resultCh := make(chan model.Result, 1)
 
-func RunSelected(names []string) ([]model.Result, []string) {
-	var results []model.Result
-	var unknown []string
+	go func() {
+		resultCh <- check()
+	}()
 
-	for _, name := range names {
-		fn, ok := registry[strings.ToLower(name)]
-		if !ok {
-			unknown = append(unknown, name)
-			continue
+	select {
+	case res := <-resultCh:
+		return res
+
+	case <-ctx.Done():
+		return model.Result{
+			Name:    name,
+			Status:  model.Warning,
+			Message: "timeout after 2s",
 		}
-
-		results = append(results, fn())
 	}
-
-	sort.Slice(results, func(i, j int) bool {
-		return results[i].Name < results[j].Name
-	})
-
-	return results, unknown
 }
