@@ -11,7 +11,7 @@ const (
 type Result struct {
 	Name    string `json:"name"`
 	Status  Status `json:"status"`
-	Version string `json:"version,omitempty"`
+	Message string `json:"message"`
 	Path    string `json:"path,omitempty"`
-	Message string `json:"message,omitempty"`
+	Fix     string `json:"fix,omitempty"`
 }

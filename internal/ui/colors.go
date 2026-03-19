@@ -1,35 +1,50 @@
 package ui
 
-// --- ANSI color codes ---
+import "os"
+
+var NoColor = false
+
+func init() {
+	if os.Getenv("NO_COLOR") != "" {
+		NoColor = true
+	}
+}
+
 const (
-	Green  = "\033[32m"
-	Red    = "\033[31m"
-	Yellow = "\033[33m"
-	Reset  = "\033[0m"
+	reset  = "\033[0m"
+	red    = "\033[31m"
+	green  = "\033[32m"
+	yellow = "\033[33m"
+	cyan   = "\033[36m"
+	gray   = "\033[90m"
 )
 
-// --- global toggle ---
-var UseColor = true
-
-// --- helpers ---
-
-func Colorize(color string, text string) string {
-	if !UseColor {
-		return text
+// base color function
+func colorize(color, s string) string {
+	if NoColor {
+		return s
 	}
-	return color + text + Reset
+	return color + s + reset
 }
 
-// --- semantic helpers (cleaner usage) ---
+// public helpers
 
-func Success(text string) string {
-	return Colorize(Green, text)
+func ColorGreen(s string) string {
+	return colorize(green, s)
 }
 
-func Error(text string) string {
-	return Colorize(Red, text)
+func ColorRed(s string) string {
+	return colorize(red, s)
 }
 
-func Warning(text string) string {
-	return Colorize(Yellow, text)
+func ColorYellow(s string) string {
+	return colorize(yellow, s)
+}
+
+func ColorCyan(s string) string {
+	return colorize(cyan, s)
+}
+
+func ColorGray(s string) string {
+	return colorize(gray, s)
 }

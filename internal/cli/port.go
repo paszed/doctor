@@ -2,17 +2,23 @@ package cli
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/paszed/doctor/internal/checks"
 )
 
-func RunPort() {
-	if len(os.Args) < 3 {
-		fmt.Println("Usage: doctor port <port>")
+func RunPort(args []string) {
+	if len(args) == 0 {
+		fmt.Println("port required (e.g. doctor port 3000)")
 		return
 	}
 
-	port := os.Args[2]
-	checks.PortProcess(port)
+	port := args[0]
+
+	result := checks.CheckPort(port)
+
+	fmt.Printf("%s\n", result.Message)
+
+	if result.Status != 0 && result.Fix != "" {
+		fmt.Printf("→ fix: %s\n", result.Fix)
+	}
 }

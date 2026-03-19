@@ -2,51 +2,39 @@ package cli
 
 import (
 	"fmt"
-	"os"
 )
 
-func Run() {
-	if len(os.Args) < 2 {
+func Run(args []string) {
+	if len(args) == 0 {
 		RunHelp()
 		return
 	}
 
-	cmd := os.Args[1]
-
-	switch cmd {
-
-	case "help", "-h", "--help":
-		RunHelp()
-		return
+	switch args[0] {
 
 	case "diagnose":
 		RunDiagnose()
-		return
 
 	case "check":
 		RunCheck()
-		return
-
-	case "list":
-		RunList()
-		return
-
-	case "port":
-		RunPort()
-		return
-
-	case "version":
-		RunVersion()
-		return
 
 	case "fix":
 		RunFix()
-		return
+
+	case "port":
+		RunPort(args[1:])
+
+	case "list":
+		RunList()
+
+	case "version":
+		RunVersion()
+
+	case "help", "-h", "--help":
+		RunHelp()
 
 	default:
-		fmt.Println("Unknown command:", cmd)
-		fmt.Println()
+		fmt.Printf("Unknown command: %s\n\n", args[0])
 		RunHelp()
-		return
 	}
 }
