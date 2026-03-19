@@ -28,7 +28,7 @@ func RunFix(args []string) {
 
 	fmt.Printf("[FIX] %s\n", name)
 
-	err := fn()
+	err := fn(args[1:])
 	if err != nil {
 		fmt.Printf("✗ fix failed: %v\n", err)
 		return
@@ -69,20 +69,23 @@ func runAutoFix() {
 
 		fn, ok := fix.Get(name)
 		if !ok {
-			fmt.Println("  → no fix available\n")
+			fmt.Println("  → no fix available")
+			fmt.Println()
 			continue
 		}
 
-		err := fn()
+		err := fn([]string{})
 		if err != nil {
 			fmt.Printf("  ✗ failed: %v\n\n", err)
 			continue
 		}
 
-		fmt.Println("  ✓ fixed\n")
+		fmt.Println("  ✓ fixed")
+		fmt.Println()
 	}
 
-	fmt.Println("→ re-running diagnose...\n")
+	fmt.Println("→ re-running diagnose...")
+	fmt.Println()
 
 	results = checks.RunAll()
 	ui.RenderResults(results)

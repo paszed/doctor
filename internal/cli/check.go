@@ -11,43 +11,33 @@ import (
 )
 
 func RunCheck(args []string) {
-
-	if len(os.Args) < 3 {
-		fmt.Println("usage: doctor check <tool>")
+	if len(args) == 0 {
+		fmt.Println("usage: doctor check <tool> [--json|--version|--path]")
 		os.Exit(1)
 	}
 
-	name := os.Args[2]
+	tool := args[0]
 
-	result, found := checks.RunOne(name)
-
-	if !found {
-
-		fmt.Printf("unknown tool: %s\n\n", name)
-
+	checkFunc, ok := checks.Get(tool)
+	if !ok {
+		fmt.Printf("unknown tool: %s\n\n", tool)
 		fmt.Println("available checks:")
-
-		for _, n := range checks.List() {
-			fmt.Printf("  %s\n", n)
+		for _, name := range checks.List() {
+			fmt.Printf("  %s\n", name)
 		}
-
 		os.Exit(1)
 	}
-	// handle flags
-	if len(os.Args) > 3 {
 
-		flag := os.Args[3]
+	result := checkFunc()
+
+	// Flags
+	if len(args) > 1 {
+		flag := args[1]
 
 		switch flag {
-
 		case "--json":
-			data, err := json.MarshalIndent(result, "", "  ")
-			if err != nil {
-				fmt.Println("json error:", err)
-				os.Exit(1)
-			}
-
-			fmt.Println(string(data))
+			out, _ := json.MarshalIndent(result, "", "  ")
+			fmt.Println(string(out))
 			return
 
 		case "--version":
@@ -55,11 +45,18 @@ func RunCheck(args []string) {
 			return
 
 		case "--path":
-			fmt.Println(result.Path)
+			if result.Path != "" {
+				fmt.Println(result.Path)
+			}
 			return
-
 		}
 	}
 
-	ui.PrintResults([]model.Result{result})
+	// Default → unified UI
+	ui.RenderResults([]model.Result{result})
+
+	// Exit code
+	if result.Status != model.OK {
+		os.Exit(1)
+	}
 }

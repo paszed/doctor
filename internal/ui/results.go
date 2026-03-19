@@ -2,58 +2,45 @@ package ui
 
 import (
 	"fmt"
-	"sort"
 
 	"github.com/paszed/doctor/internal/model"
+	"github.com/paszed/doctor/internal/state"
 )
 
 func RenderResults(results []model.Result) {
-	if len(results) == 0 {
-		fmt.Println("No results")
-		return
-	}
+	fmt.Println("TOOLS")
+	fmt.Println("-----")
 
-	// sort results alphabetically
-	sort.Slice(results, func(i, j int) bool {
-		return results[i].Name < results[j].Name
-	})
-
-	// dynamic column width
-	maxWidth := 0
-	for _, r := range results {
-		if len(r.Name) > maxWidth {
-			maxWidth = len(r.Name)
-		}
-	}
-	maxWidth += 2
-
-	fmt.Println(ColorGray("TOOLS"))
-	fmt.Println(ColorGray("-----"))
+	maxWidth := maxNameWidth(results)
 
 	for _, r := range results {
 		name := padRight(r.Name, maxWidth)
 
 		switch r.Status {
 		case model.OK:
-			fmt.Printf("%s %s %s\n",
+			fmt.Printf("%s   %s %s\n",
 				name,
 				ColorGreen("✓"),
 				r.Message,
 			)
 
 		case model.Missing:
-			fmt.Printf("%s %s %s\n",
+			fmt.Printf("%s   %s %s\n",
 				name,
 				ColorRed("✗"),
 				r.Message,
 			)
 
 			if r.Fix != "" {
-				fmt.Printf("   fix → %s\n\n", ColorCyan(r.Fix))
+				fmt.Printf("%s   %s\n",
+					padRight("", maxWidth),
+					ColorCyan("fix → "+r.Fix),
+				)
+				fmt.Println()
 			}
 
 		case model.Warning:
-			fmt.Printf("%s %s %s\n\n",
+			fmt.Printf("%s   %s %s\n",
 				name,
 				ColorYellow("!"),
 				r.Message,
@@ -61,41 +48,50 @@ func RenderResults(results []model.Result) {
 		}
 	}
 
-	printSummary(results)
+	fmt.Println()
+	renderSummary(results)
 }
 
-func printSummary(results []model.Result) {
+func renderSummary(results []model.Result) {
+	ok, warn, missing := state.Summary(results)
 	total := len(results)
-	passed := 0
-	warn := 0
-	missing := 0
 
+	fmt.Println("SUMMARY")
+	fmt.Println("-------")
+
+	switch {
+	case missing > 0:
+		fmt.Printf("%s %d/%d checks passed\n",
+			ColorRed("✗"),
+			ok,
+			total,
+		)
+	case warn > 0:
+		fmt.Printf("%s %d/%d checks passed\n",
+			ColorYellow("!"),
+			ok,
+			total,
+		)
+	default:
+		fmt.Printf("%s %d/%d checks passed\n",
+			ColorGreen("✓"),
+			ok,
+			total,
+		)
+	}
+}
+
+func maxNameWidth(results []model.Result) int {
+	max := 0
 	for _, r := range results {
-		switch r.Status {
-		case model.OK:
-			passed++
-		case model.Warning:
-			warn++
-		case model.Missing:
-			missing++
+		if len(r.Name) > max {
+			max = len(r.Name)
 		}
 	}
-
-	fmt.Println(ColorGray("SUMMARY"))
-	fmt.Println(ColorGray("-------"))
-
-	if missing > 0 {
-		fmt.Printf("%s %d/%d checks passed\n", ColorRed("✗"), passed, total)
-	} else if warn > 0 {
-		fmt.Printf("%s %d/%d checks passed\n", ColorYellow("!"), passed, total)
-	} else {
-		fmt.Printf("%s %d/%d checks passed\n", ColorGreen("✓"), passed, total)
-	}
+	return max
 }
 
-func padRight(str string, length int) string {
-	for len(str) < length {
-		str += " "
-	}
-	return str
+func padRight(s string, width int) string {
+	format := fmt.Sprintf("%%-%ds", width)
+	return fmt.Sprintf(format, s)
 }

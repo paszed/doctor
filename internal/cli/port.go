@@ -2,23 +2,28 @@ package cli
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/paszed/doctor/internal/checks"
+	"github.com/paszed/doctor/internal/model"
+	"github.com/paszed/doctor/internal/ui"
 )
 
 func RunPort(args []string) {
 	if len(args) == 0 {
-		fmt.Println("port required (e.g. doctor port 3000)")
-		return
+		fmt.Println("usage: doctor port <port>")
+		os.Exit(1)
 	}
 
 	port := args[0]
 
 	result := checks.CheckPort(port)
 
-	fmt.Printf("%s\n", result.Message)
+	// Consistent UI rendering (same as diagnose/check)
+	ui.RenderResults([]model.Result{result})
 
-	if result.Status != 0 && result.Fix != "" {
-		fmt.Printf("→ fix: %s\n", result.Fix)
+	// Exit code behavior
+	if result.Status != model.OK {
+		os.Exit(1)
 	}
 }

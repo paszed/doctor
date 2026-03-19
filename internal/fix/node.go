@@ -5,25 +5,28 @@ import (
 	"os/exec"
 )
 
-func FixNode() error {
-	fmt.Println("[FIX] node")
+func init() {
+	Register("node", FixNode)
+}
+
+func FixNode(args []string) error {
+	_ = args
 
 	// check if node exists
-	if _, err := exec.LookPath("node"); err == nil {
+	_, err := exec.LookPath("node")
+	if err == nil {
 		fmt.Println("✓ already installed")
 		return nil
 	}
 
-	fmt.Println("→ node not found")
+	fmt.Println("→ installing Node.js...")
 
-	// suggest install (DO NOT auto-install yet)
-	fmt.Println("→ install via:")
-	fmt.Println("   brew install node")
-	fmt.Println("   or https://nodejs.org")
+	// macOS (Homebrew)
+	cmd := exec.Command("brew", "install", "node")
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("failed to install node: %v", err)
+	}
 
+	fmt.Println("✓ Node installed")
 	return nil
-}
-
-func init() {
-	Register("node", FixNode)
 }
