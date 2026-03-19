@@ -27,7 +27,7 @@ func RunCheck() {
 
 		fmt.Println("available checks:")
 
-		for _, n := range checks.Names() {
+		for _, n := range checks.List() {
 			fmt.Printf("  %s\n", n)
 		}
 

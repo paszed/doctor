@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	Register(CheckGit)
+	Register("git", CheckGit)
 }
 
 func CheckGit() model.Result {

@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	Register(CheckGo)
+	Register("go", CheckGo)
 }
 
 func CheckGo() model.Result {

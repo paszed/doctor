@@ -1,29 +1,12 @@
 package checks
 
+import "strings"
 import "github.com/paszed/doctor/internal/model"
 
 type CheckFunc func() model.Result
 
-var registry []CheckFunc
+var registry = map[string]CheckFunc{}
 
-func Register(check CheckFunc) {
-	registry = append(registry, check)
-}
-
-func All() []CheckFunc {
-	return registry
-}
-
-func Names() []string {
-
-	var names []string
-
-	for _, check := range registry {
-
-		result := check()
-		names = append(names, result.Name)
-
-	}
-
-	return names
+func Register(name string, fn CheckFunc) {
+	registry[strings.ToLower(name)] = fn
 }

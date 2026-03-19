@@ -6,52 +6,47 @@ import (
 )
 
 func Run() {
-
-	if len(os.Args) < 2 ||
-		os.Args[1] == "help" ||
-		os.Args[1] == "-h" ||
-		os.Args[1] == "--help" {
-
+	if len(os.Args) < 2 {
 		RunHelp()
 		return
 	}
-	switch os.Args[1] {
+
+	cmd := os.Args[1]
+
+	switch cmd {
+
+	case "help", "-h", "--help":
+		RunHelp()
+		return
 
 	case "diagnose":
 		RunDiagnose()
+		return
 
 	case "check":
 		RunCheck()
+		return
 
 	case "list":
 		RunList()
+		return
 
 	case "port":
 		RunPort()
+		return
 
 	case "version":
 		RunVersion()
+		return
 
 	case "fix":
 		RunFix()
-
-	case "help":
-		RunHelp()
+		return
 
 	default:
-		fmt.Println("Unknown command:", os.Args[1])
-		printHelp()
+		fmt.Println("Unknown command:", cmd)
+		fmt.Println()
+		RunHelp()
+		return
 	}
-}
-
-func printHelp() {
-
-	fmt.Println("Doctor — system diagnostics tool")
-	fmt.Println()
-	fmt.Println("Usage:")
-	fmt.Println("  doctor diagnose")
-	fmt.Println("  doctor check <tool>")
-	fmt.Println("  doctor port <port>")
-	fmt.Println("  doctor fix")
-	fmt.Println("  doctor version")
 }

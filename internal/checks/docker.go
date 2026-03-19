@@ -36,5 +36,5 @@ func CheckDocker() model.Result {
 }
 
 func init() {
-	Register(CheckDocker)
+	Register("docker", CheckDocker)
 }

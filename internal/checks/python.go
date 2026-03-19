@@ -8,7 +8,7 @@ import (
 )
 
 func init() {
-	Register(CheckPython)
+	Register("python3", CheckPython)
 }
 
 func CheckPython() model.Result {
