@@ -22,17 +22,17 @@ func CheckPort(port string) model.Result {
 	// timeout case
 	if ctx.Err() == context.DeadlineExceeded {
 		return model.Result{
-			Name:    port,
-			Status:  1,
-			Message: "timeout while checking port",
+			Name:    "port:" + port,
+			Status:  model.Warning,
+			Message: "timeout (2s)",
 		}
 	}
 
 	// port is free
 	if len(out) == 0 {
 		return model.Result{
-			Name:    port,
-			Status:  0,
+			Name:    "port:" + port,
+			Status:  model.OK,
 			Message: "free",
 		}
 	}
@@ -54,8 +54,8 @@ func CheckPort(port string) model.Result {
 	}
 
 	return model.Result{
-		Name:    port,
-		Status:  1,
+		Name:    "port:" + port,
+		Status:  model.Missing,
 		Message: fmt.Sprintf("in use (%s)", processName),
 		Fix:     fmt.Sprintf("doctor fix ports %s", port),
 	}

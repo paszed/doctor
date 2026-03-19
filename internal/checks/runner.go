@@ -61,7 +61,7 @@ func runWithTimeout(name string, check CheckFunc) model.Result {
 		return model.Result{
 			Name:    name,
 			Status:  model.Warning,
-			Message: "timeout after 2s",
+			Message: "timed out (2s)",
 		}
 	}
 }
