@@ -6,35 +6,35 @@ import (
 
 func Run(args []string) {
 	if len(args) == 0 {
-		RunHelp()
+		RunHelp(nil)
 		return
 	}
 
 	switch args[0] {
 
 	case "diagnose":
-		RunDiagnose()
+		RunDiagnose(args[1:])
 
 	case "check":
-		RunCheck()
+		RunCheck(args[1:])
 
 	case "fix":
-		RunFix()
+		RunFix(args[1:])
 
 	case "port":
 		RunPort(args[1:])
 
 	case "list":
-		RunList()
+		RunList(args[1:])
 
 	case "version":
-		RunVersion()
+		RunVersion(args[1:])
 
 	case "help", "-h", "--help":
-		RunHelp()
+		RunHelp(args[1:])
 
 	default:
 		fmt.Printf("Unknown command: %s\n\n", args[0])
-		RunHelp()
+		RunHelp(nil)
 	}
 }

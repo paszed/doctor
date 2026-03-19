@@ -6,7 +6,6 @@ import (
 )
 
 func FixDocker() error {
-	fmt.Println("[FIX] docker")
 
 	// check if already running
 	check := exec.Command("docker", "info")

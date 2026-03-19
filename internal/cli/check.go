@@ -10,7 +10,7 @@ import (
 	"github.com/paszed/doctor/internal/ui"
 )
 
-func RunCheck() {
+func RunCheck(args []string) {
 
 	if len(os.Args) < 3 {
 		fmt.Println("usage: doctor check <tool>")

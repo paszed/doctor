@@ -6,7 +6,7 @@ import (
 	"github.com/paszed/doctor/internal/checks"
 )
 
-func RunList() {
+func RunList(args []string) {
 
 	names := checks.List()
 

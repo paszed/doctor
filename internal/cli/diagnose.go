@@ -12,8 +12,7 @@ import (
 	"github.com/paszed/doctor/internal/ui"
 )
 
-func RunDiagnose() {
-	args := os.Args[2:]
+func RunDiagnose(args []string) {
 
 	jsonMode := false
 	var selected []string
