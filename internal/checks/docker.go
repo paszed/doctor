@@ -2,6 +2,7 @@ package checks
 
 import (
 	"os/exec"
+	"strings"
 
 	"github.com/paszed/doctor/internal/model"
 )
@@ -31,7 +32,7 @@ func CheckDocker() model.Result {
 		Name:    "docker",
 		Status:  model.OK,
 		Path:    path,
-		Message: string(out),
+		Message: strings.TrimSpace(string(out)),
 	}
 }
 

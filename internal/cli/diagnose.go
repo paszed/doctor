@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
 
 	"github.com/paszed/doctor/internal/checks"
 	"github.com/paszed/doctor/internal/model"
@@ -12,12 +13,13 @@ import (
 )
 
 func RunDiagnose() {
-	args := os.Args
+	args := os.Args[2:]
 
 	jsonMode := false
 	var selected []string
 
-	for _, arg := range args[2:] {
+	// --- parse args ---
+	for _, arg := range args {
 		if arg == "--json" {
 			jsonMode = true
 		} else {
@@ -27,6 +29,7 @@ func RunDiagnose() {
 
 	var results []model.Result
 
+	// --- execution ---
 	if len(selected) == 0 {
 		results = checks.RunAll()
 	} else {
@@ -41,18 +44,27 @@ func RunDiagnose() {
 		}
 	}
 
+	// --- sort results (stable UX) ---
+	sort.Slice(results, func(i, j int) bool {
+		return results[i].Name < results[j].Name
+	})
+
+	// --- JSON output ---
 	if jsonMode {
 		data, err := json.MarshalIndent(results, "", "  ")
 		if err != nil {
 			fmt.Println("failed to encode json:", err)
 			os.Exit(1)
 		}
+
 		fmt.Println(string(data))
 		return
 	}
 
+	// --- human output ---
 	ui.PrintResults(results)
 
+	// --- exit codes ---
 	_, warn, missing := state.Summary(results)
 
 	if missing > 0 {

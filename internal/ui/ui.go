@@ -7,21 +7,27 @@ import (
 	"github.com/paszed/doctor/internal/model"
 )
 
+// --- status printers ---
+
 func OK(name string, msg string) {
-	fmt.Printf("%-16s %s✓%s %s\n", name, Green, Reset, msg)
+	msg = strings.TrimSpace(msg)
+	fmt.Printf("%-16s %s %s\n", name, Success("✓"), msg)
 }
 
 func Fail(name string, msg string) {
-	fmt.Printf("%-16s %s✗%s %s\n", name, Red, Reset, msg)
+	msg = strings.TrimSpace(msg)
+	fmt.Printf("%-16s %s %s\n", name, Error("✗"), msg)
 }
 
 func Warn(name string, msg string) {
-	fmt.Printf("%-16s %s!%s %s\n", name, Yellow, Reset, msg)
+	msg = strings.TrimSpace(msg)
+	fmt.Printf("%-16s %s %s\n", name, Warning("!"), msg)
 }
+
+// --- single result ---
 
 func PrintResult(r model.Result) {
 	switch r.Status {
-
 	case model.OK:
 		OK(r.Name, r.Message)
 
@@ -32,12 +38,14 @@ func PrintResult(r model.Result) {
 		Warn(r.Name, r.Message)
 
 	default:
-		fmt.Printf("%-16s ? %s\n", r.Name, r.Message)
+		msg := strings.TrimSpace(r.Message)
+		fmt.Printf("%-16s %s\n", r.Name, msg)
 	}
 }
 
+// --- section header ---
+
 func Section(title string) {
-	fmt.Println()
-	fmt.Println(title)
-	fmt.Println(strings.Repeat("-", len(title)+4))
+	fmt.Printf("\n%s\n", title)
+	fmt.Println(strings.Repeat("-", len(title)))
 }
