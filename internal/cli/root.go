@@ -1,14 +1,10 @@
 package cli
 
 import (
-	"bufio"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/paszed/doctor/internal/checks"
-	"github.com/paszed/doctor/internal/fix"
-	"github.com/paszed/doctor/internal/model"
 	"github.com/paszed/doctor/internal/state"
 	"github.com/paszed/doctor/internal/ui"
 )
@@ -35,7 +31,7 @@ func Run(args []string) {
 	case "version":
 		RunVersion(args[1:])
 	default:
-		fmt.Printf("unknown command: %s\n\n", args[0])
+		fmt.Printf("Unknown command: %s\n\n", args[0])
 		RunHelp(nil)
 		os.Exit(1)
 	}
@@ -46,65 +42,40 @@ func RunInteractive() {
 
 	results := checks.RunAll()
 	ui.RenderResults(results)
+	state.PrintSummary(results)
 
-	// collect only real issues (Missing)
-	var issues []model.Result
+	// collect actionable issues (Missing with fix)
+	var issues []string
 	for _, r := range results {
-		if r.Status == model.Missing && r.Fix != "" {
-			issues = append(issues, r)
+		if r.Status == 1 && r.Fix != "" {
+			issues = append(issues, r.Name)
 		}
 	}
 
 	if len(issues) == 0 {
-		fmt.Println("\n✓ no issues found")
-		return
+		exitCode := state.ExitCode(results)
+		os.Exit(exitCode)
 	}
-
-	fmt.Println("\n---")
-
-	reader := bufio.NewReader(os.Stdin)
 
 	for _, issue := range issues {
-		fmt.Printf("✗ %s\n", issue.Name)
-		fmt.Printf("→ fix now? (y/n): ")
+		fmt.Printf("\n---\n✗ %s\n", issue)
+		fmt.Printf("→ fix %s now? (y/n): ", issue)
 
-		input, _ := reader.ReadString('\n')
-		input = strings.TrimSpace(strings.ToLower(input))
+		var input string
+		fmt.Scanln(&input)
 
-		if input == "y" {
-			parts := strings.Fields(issue.Fix)
-
-			if len(parts) >= 3 {
-				tool := parts[2]
-
-				fn, ok := fix.Get(tool)
-				if ok {
-					fmt.Printf("\n[FIX] %s\n", tool)
-
-					var fixArgs []string
-					if len(parts) > 3 {
-						fixArgs = parts[3:]
-					}
-
-					if err := fn(fixArgs); err != nil {
-						fmt.Printf("✗ failed: %v\n", err)
-					} else {
-						fmt.Println("✓ fixed")
-					}
-				} else {
-					fmt.Println("✗ no fix available")
-				}
-			}
+		if input == "y" || input == "Y" {
+			RunFix([]string{issue})
 		}
-
-		fmt.Println()
 	}
 
-	fmt.Println("→ re-running diagnose...")
+	fmt.Println("\n✓ all actionable issues processed")
 
+	fmt.Println("\n→ re-running diagnose...")
 	results = checks.RunAll()
 	ui.RenderResults(results)
+	state.PrintSummary(results)
 
-	_, _, exitCode := state.Summary(results)
+	exitCode := state.ExitCode(results)
 	os.Exit(exitCode)
 }
