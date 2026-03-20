@@ -20,7 +20,7 @@ func RunAll() []model.Result {
 
 	for name, check := range registry {
 
-		// 🔥 Skip ignored checks
+		// 🔥 skip ignored checks
 		if contains(config.Current.Ignore, name) {
 			continue
 		}
@@ -62,14 +62,31 @@ func RunAll() []model.Result {
 		results = append(results, r.result)
 	}
 
-	// 🔥 Add dynamic port checks from config
+	// 🔥 DEDUPLICATE + ADD CONFIG PORTS
+	seenPorts := make(map[string]bool)
+
+	// mark existing port checks
+	for _, r := range results {
+		if len(r.Name) > 5 && r.Name[:5] == "port:" {
+			seenPorts[r.Name] = true
+		}
+	}
+
+	// add config ports safely
 	for _, port := range config.Current.Ports {
+		name := fmt.Sprintf("port:%d", port)
+
+		if seenPorts[name] {
+			continue
+		}
+
 		results = append(results, CheckPort(fmt.Sprintf("%d", port)))
 	}
 
 	return results
 }
 
+// helper
 func contains(list []string, item string) bool {
 	for _, v := range list {
 		if v == item {
