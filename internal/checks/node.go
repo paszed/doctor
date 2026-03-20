@@ -7,10 +7,6 @@ import (
 	"github.com/paszed/doctor/internal/model"
 )
 
-func init() {
-	Register("node", CheckNode)
-}
-
 func CheckNode() model.Result {
 
 	cmd := exec.Command("node", "--version")

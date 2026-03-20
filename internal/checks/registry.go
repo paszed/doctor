@@ -10,7 +10,7 @@ import (
 type CheckFunc func() model.Result
 
 // registry holds all registered checks by name
-var registry = map[string]CheckFunc{}
+var registry = make(map[string]CheckFunc)
 
 // Register adds a check to the registry
 func Register(name string, fn CheckFunc) {

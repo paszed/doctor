@@ -1,0 +1,6 @@
+ports:
+  - 3000
+  - 5432
+
+ignore:
+  - sleep

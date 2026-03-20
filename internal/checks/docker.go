@@ -1,62 +1,43 @@
 package checks
 
 import (
-	"context"
+	"fmt"
 	"os/exec"
-	"time"
+	"strings"
 
 	"github.com/paszed/doctor/internal/model"
 )
 
-const dockerTimeout = 2 * time.Second
-
 func CheckDocker() model.Result {
-	ctx, cancel := context.WithTimeout(context.Background(), dockerTimeout)
-	defer cancel()
-
-	// check if docker exists
-	path, err := exec.LookPath("docker")
+	// Check if docker exists
+	_, err := exec.LookPath("docker")
 	if err != nil {
 		return model.Result{
 			Name:    "docker",
-			Status:  1,
-			Message: "docker not installed",
-			Fix:     "install docker",
+			Status:  model.Missing,
+			Message: "Docker is not installed",
+			Fix:     "Install Docker Desktop",
 		}
 	}
 
-	// check if docker daemon is running
-	cmd := exec.CommandContext(ctx, "docker", "info")
-	if err := cmd.Run(); err != nil {
+	// Check if daemon is running + get version
+	cmd := exec.Command("docker", "version", "--format", "{{.Server.Version}}")
+	out, err := cmd.Output()
+	if err != nil {
 		return model.Result{
 			Name:    "docker",
-			Status:  1,
-			Path:    path,
+			Status:  model.Missing,
 			Message: "Docker installed but NOT running",
 			Fix:     "doctor fix docker",
 		}
 	}
 
-	// get version
-	versionCmd := exec.CommandContext(ctx, "docker", "--version")
-	out, err := versionCmd.Output()
-	if err != nil {
-		return model.Result{
-			Name:    "docker",
-			Status:  0,
-			Path:    path,
-			Message: "docker installed (version unknown)",
-		}
-	}
+	version := strings.TrimSpace(string(out))
 
 	return model.Result{
 		Name:    "docker",
-		Status:  0,
-		Path:    path,
-		Message: string(out),
+		Status:  model.OK,
+		Message: fmt.Sprintf("Docker version %s", version),
 	}
 }
 
-func init() {
-	Register("docker", CheckDocker)
-}

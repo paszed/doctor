@@ -7,10 +7,6 @@ import (
 	"github.com/paszed/doctor/internal/model"
 )
 
-func init() {
-	Register("git", CheckGit)
-}
-
 func CheckGit() model.Result {
 
 	cmd := exec.Command("git", "--version")

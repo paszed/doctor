@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/paszed/doctor/internal/config"
+	"github.com/paszed/doctor/internal/detect"
 	"github.com/paszed/doctor/internal/model"
 )
 
@@ -17,6 +18,9 @@ type resultWrapper struct {
 func RunAll() []model.Result {
 	var wg sync.WaitGroup
 	resultsChan := make(chan resultWrapper, len(registry))
+
+	// 🔥 project detection
+	project := detect.Detect()
 
 	for name, check := range registry {
 
@@ -62,17 +66,16 @@ func RunAll() []model.Result {
 		results = append(results, r.result)
 	}
 
-	// 🔥 DEDUPLICATE + ADD CONFIG PORTS
+	// 🔥 DEDUPLICATE + ADD PORTS
 	seenPorts := make(map[string]bool)
 
-	// mark existing port checks
 	for _, r := range results {
 		if len(r.Name) > 5 && r.Name[:5] == "port:" {
 			seenPorts[r.Name] = true
 		}
 	}
 
-	// add config ports safely
+	// config ports
 	for _, port := range config.Current.Ports {
 		name := fmt.Sprintf("port:%d", port)
 
@@ -81,6 +84,15 @@ func RunAll() []model.Result {
 		}
 
 		results = append(results, CheckPort(fmt.Sprintf("%d", port)))
+		seenPorts[name] = true
+	}
+
+	// 🔥 auto-detect ports (Node project)
+	if project.HasNode {
+		name := "port:3000"
+		if !seenPorts[name] {
+			results = append(results, CheckPort("3000"))
+		}
 	}
 
 	return results

@@ -15,7 +15,3 @@ func CheckSleep() model.Result {
 		Message: "should not reach here",
 	}
 }
-
-func init() {
-	Register("sleep", CheckSleep)
-}

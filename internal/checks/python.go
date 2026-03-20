@@ -7,10 +7,6 @@ import (
 	"github.com/paszed/doctor/internal/model"
 )
 
-func init() {
-	Register("python3", CheckPython)
-}
-
 func CheckPython() model.Result {
 
 	cmd := exec.Command("python3", "--version")

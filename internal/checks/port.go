@@ -60,10 +60,3 @@ func CheckPort(port string) model.Result {
 		Fix:     fmt.Sprintf("doctor fix ports %s", port),
 	}
 }
-
-func init() {
-	Register("port", func() model.Result {
-		// default port check (optional, can extend later)
-		return CheckPort("3000")
-	})
-}

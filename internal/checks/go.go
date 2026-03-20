@@ -7,10 +7,6 @@ import (
 	"github.com/paszed/doctor/internal/model"
 )
 
-func init() {
-	Register("go", CheckGo)
-}
-
 func CheckGo() model.Result {
 
 	cmd := exec.Command("go", "version")

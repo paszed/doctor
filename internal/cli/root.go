@@ -33,6 +33,9 @@ func Run(args []string) {
 		RunList(args[1:])
 	case "version":
 		RunVersion(args[1:])
+
+	case "init":
+		RunInit(args[1:])
 	default:
 		fmt.Printf("Unknown command: %s\n\n", args[0])
 		RunHelp(nil)
