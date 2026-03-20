@@ -13,7 +13,6 @@ import (
 )
 
 func RunDiagnose(args []string) {
-
 	jsonMode := false
 	var selected []string
 
@@ -46,12 +45,14 @@ func RunDiagnose(args []string) {
 		results = checks.RunAll()
 	} else {
 		for _, name := range selected {
-			r, ok := checks.RunOne(name)
+			checkFunc, ok := checks.Get(name)
 			if !ok {
 				fmt.Printf("unknown tool: %s\n", name)
 				printAvailable()
 				os.Exit(1)
 			}
+
+			r := checkFunc()
 			results = append(results, r)
 		}
 	}
@@ -75,9 +76,9 @@ func RunDiagnose(args []string) {
 	// --- human output ---
 	ui.RenderResults(results)
 
+	// --- exit codes ---
 	_, warnCount, missingCount := state.Summary(results)
 
-	// --- exit codes ---
 	if missingCount > 0 {
 		os.Exit(2)
 	}
@@ -88,7 +89,6 @@ func RunDiagnose(args []string) {
 }
 
 // --- helper ---
-
 func printAvailable() {
 	fmt.Println("\navailable checks:")
 	for _, name := range checks.List() {

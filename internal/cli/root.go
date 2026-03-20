@@ -5,11 +5,14 @@ import (
 	"os"
 
 	"github.com/paszed/doctor/internal/checks"
+	"github.com/paszed/doctor/internal/config"
 	"github.com/paszed/doctor/internal/state"
 	"github.com/paszed/doctor/internal/ui"
 )
 
 func Run(args []string) {
+
+	config.Current = config.Load()
 	if len(args) == 0 {
 		RunInteractive()
 		return

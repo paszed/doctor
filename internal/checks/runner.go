@@ -1,67 +1,80 @@
 package checks
 
 import (
-	"context"
+	"fmt"
+	"sync"
 	"time"
 
+	"github.com/paszed/doctor/internal/config"
 	"github.com/paszed/doctor/internal/model"
 )
 
-// default timeout per check
-const timeout = 2 * time.Second
+type resultWrapper struct {
+	name   string
+	result model.Result
+}
 
-// RunAll executes all checks concurrently with timeout protection
 func RunAll() []model.Result {
-	ch := make(chan model.Result)
+	var wg sync.WaitGroup
+	resultsChan := make(chan resultWrapper, len(registry))
 
-	// launch all checks
 	for name, check := range registry {
-		go func(n string, c CheckFunc) {
-			ch <- runWithTimeout(n, c)
+
+		// 🔥 Skip ignored checks
+		if contains(config.Current.Ignore, name) {
+			continue
+		}
+
+		wg.Add(1)
+
+		go func(name string, check CheckFunc) {
+			defer wg.Done()
+
+			done := make(chan model.Result, 1)
+
+			go func() {
+				done <- check()
+			}()
+
+			select {
+			case res := <-done:
+				resultsChan <- resultWrapper{name: name, result: res}
+
+			case <-time.After(2 * time.Second):
+				resultsChan <- resultWrapper{
+					name: name,
+					result: model.Result{
+						Name:    name,
+						Status:  model.Warning,
+						Message: "timed out (2s)",
+					},
+				}
+			}
 		}(name, check)
 	}
 
+	wg.Wait()
+	close(resultsChan)
+
 	var results []model.Result
 
-	// collect results
-	for range registry {
-		results = append(results, <-ch)
+	for r := range resultsChan {
+		results = append(results, r.result)
+	}
+
+	// 🔥 Add dynamic port checks from config
+	for _, port := range config.Current.Ports {
+		results = append(results, CheckPort(fmt.Sprintf("%d", port)))
 	}
 
 	return results
 }
 
-// RunOne executes a single check with timeout protection
-func RunOne(name string) (model.Result, bool) {
-	check, ok := registry[name]
-	if !ok {
-		return model.Result{}, false
-	}
-
-	return runWithTimeout(name, check), true
-}
-
-// --- core timeout wrapper ---
-
-func runWithTimeout(name string, check CheckFunc) model.Result {
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
-	defer cancel()
-
-	resultCh := make(chan model.Result, 1)
-
-	go func() {
-		resultCh <- check()
-	}()
-
-	select {
-	case res := <-resultCh:
-		return res
-
-	case <-ctx.Done():
-		return model.Result{
-			Name:    name,
-			Status:  model.Warning,
-			Message: "timed out (2s)",
+func contains(list []string, item string) bool {
+	for _, v := range list {
+		if v == item {
+			return true
 		}
 	}
+	return false
 }
