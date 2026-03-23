@@ -1,13 +1,12 @@
 # Go build artifacts
 bin/
-doctor
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
 
-# Go test
+# Go test artifacts
 *.test
 *.out
 coverage.out
@@ -16,7 +15,7 @@ coverage.out
 go.work
 go.work.sum
 
-# IDE
+# Editor directories
 .vscode/
 .idea/
 
@@ -26,13 +25,16 @@ go.work.sum
 # Logs
 *.log
 
-# Temp
+# Temp directories
 tmp/
 
-# binaries
-doctor
-
-# editor temp files
+# Editor temp files
 *.swp
 *.swo
 *~
+
+# Binaries
+# Ignore the output binary but allow source folder
+doctor
+!cmd/doctor/
+!cmd/doctor/main.go

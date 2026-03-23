@@ -40,4 +40,3 @@ func CheckDocker() model.Result {
 		Message: fmt.Sprintf("Docker version %s", version),
 	}
 }
-

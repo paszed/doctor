@@ -63,4 +63,3 @@ func Run(name string, args []string) error {
 
 	return fmt.Errorf("fix failed after %d attempts: %v", maxRetries, lastErr)
 }
-
