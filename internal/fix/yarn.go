@@ -2,28 +2,33 @@ package fix
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
-	"strings"
 )
 
-// FixYarn checks if Yarn is installed and provides install instructions if not
+// FixYarn checks if Yarn is installed and attempts to install it via npm if missing.
 func FixYarn(args []string) error {
-	fmt.Println("[FIX] yarn")
-
-	// Check if yarn exists
-	cmd := exec.Command("yarn", "--version")
-	out, err := cmd.CombinedOutput()
-	if err == nil {
-		fmt.Printf("✓ yarn is already installed: %s\n", strings.TrimSpace(string(out)))
+	// Check if Yarn is already installed
+	if _, err := exec.LookPath("yarn"); err == nil {
+		fmt.Println("✓ yarn installed")
 		return nil
 	}
 
-	// Otherwise, print instructions
-	fmt.Println("→ yarn not found.")
-	fmt.Println("  Install yarn via npm: npm install -g yarn")
-	return fmt.Errorf("yarn not installed")
+	// Not found, attempt installation via npm
+	fmt.Println("→ yarn not found. Installing via npm...")
+	cmd := exec.Command("npm", "install", "-g", "yarn")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
+		fmt.Println("✗ failed: yarn not installed")
+		return err
+	}
+
+	fmt.Println("✓ fix completed")
+	return nil
 }
 
 func init() {
 	Register("yarn", FixYarn)
 }
+

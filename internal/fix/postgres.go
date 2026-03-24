@@ -3,30 +3,30 @@ package fix
 import (
 	"fmt"
 	"os/exec"
-	"strings"
 )
 
-// FixPostgres attempts to detect PostgreSQL and provide guidance to install it
+// FixPostgres attempts to check and guide installation of PostgreSQL
 func FixPostgres(args []string) error {
 	fmt.Println("[FIX] postgres")
 
-	// Check if psql exists
-	cmd := exec.Command("psql", "--version")
-	out, err := cmd.CombinedOutput()
+	// Check if psql is available
+	_, err := exec.LookPath("psql")
 	if err == nil {
-		fmt.Printf("✓ PostgreSQL is already installed: %s\n", strings.TrimSpace(string(out)))
+		fmt.Println("✓ PostgreSQL is already installed")
 		return nil
 	}
 
-	// Otherwise, print instructions
+	// Not found, print OS-specific instructions
 	fmt.Println("→ PostgreSQL not found.")
 	fmt.Println("  Please install PostgreSQL and ensure `psql` is in your PATH.")
 	fmt.Println("  On macOS: brew install postgresql")
 	fmt.Println("  On Linux (Debian/Ubuntu): sudo apt install postgresql postgresql-client")
 	fmt.Println("  On Windows: https://www.postgresql.org/download/windows/")
+
 	return fmt.Errorf("postgres not installed")
 }
 
 func init() {
 	Register("postgres", FixPostgres)
 }
+

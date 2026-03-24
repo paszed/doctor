@@ -3,27 +3,22 @@ package fix
 import (
 	"fmt"
 	"os/exec"
-	"strings"
 )
 
-// FixPNPM checks if pnpm is installed and provides install instructions if not
+// FixPNPM tries to install pnpm globally using npm.
 func FixPNPM(args []string) error {
-	fmt.Println("[FIX] pnpm")
-
-	// Check if pnpm exists
-	cmd := exec.Command("pnpm", "--version")
+	cmd := exec.Command("npm", "install", "-g", "pnpm")
 	out, err := cmd.CombinedOutput()
-	if err == nil {
-		fmt.Printf("✓ pnpm is already installed: %s\n", strings.TrimSpace(string(out)))
-		return nil
+	if err != nil {
+		fmt.Println("→ pnpm not found.")
+		fmt.Println("  Install via npm manually: npm install -g pnpm")
+		return err
 	}
-
-	// Otherwise, print instructions
-	fmt.Println("→ pnpm not found.")
-	fmt.Println("  Install pnpm via npm: npm install -g pnpm")
-	return fmt.Errorf("pnpm not installed")
+	fmt.Printf("✓ pnpm installed\nOutput:\n%s\n", out)
+	return nil
 }
 
 func init() {
 	Register("pnpm", FixPNPM)
 }
+

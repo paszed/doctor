@@ -3,38 +3,40 @@ package fix
 import (
 	"fmt"
 	"os/exec"
-	"time"
+	"runtime"
+	"strings"
 )
 
-// FixJava attempts to ensure Java is installed and in PATH.
+// FixJava attempts to ensure Java is installed and available in PATH
 func FixJava(args []string) error {
 	fmt.Println("[FIX] java")
-	// Check if java is already installed
-	_, err := exec.LookPath("java")
+
+	// Try to check Java version
+	cmd := exec.Command("java", "-version")
+	out, err := cmd.CombinedOutput()
 	if err == nil {
 		fmt.Println("✓ Java is already installed")
 		return nil
 	}
 
-	fmt.Println("→ Java not found, attempting to install...")
-
-	// Example for macOS: install openjdk via brew
-	cmd := exec.Command("brew", "install", "openjdk")
-	err = cmd.Run()
-	if err != nil {
-		fmt.Println("✗ failed to install Java automatically")
-		fmt.Println("→ Please install JDK manually and ensure `java` is in PATH")
-		return err
+	// If not found, print installation instructions based on OS
+	fmt.Println("→ java not found.")
+	switch runtime.GOOS {
+	case "darwin":
+		fmt.Println("  On macOS: brew install openjdk")
+	case "linux":
+		fmt.Println("  On Linux (Debian/Ubuntu): sudo apt install openjdk-17-jdk")
+	case "windows":
+		fmt.Println("  On Windows: Download and install JDK from https://adoptopenjdk.net/")
+	default:
+		fmt.Println("  Please install JDK manually.")
 	}
 
-	// Give system a few seconds to refresh PATH
-	time.Sleep(2 * time.Second)
-
-	fmt.Println("✓ Java installed")
-	return nil
+	return fmt.Errorf("java not installed or not in PATH: %s", strings.TrimSpace(string(out)))
 }
 
-// Register in the fix registry
+// Register Java fix
 func init() {
 	Register("java", FixJava)
 }
+
