@@ -1,4 +1,3 @@
-cat << 'EOF' > README.md
 # Doctor – Developer Environment Diagnostics
 
 **Doctor** is a CLI tool for automatically checking, diagnosing, and fixing your developer environment. It ensures that all essential tools, databases, language runtimes, and DevOps utilities are installed, properly configured, and ready to use.  
@@ -150,4 +149,4 @@ Show Doctor version:
 2. Add new checks/fixes in `internal/checks` and `internal/fix`  
 3. Update `internal/cli/help.go` and the README  
 4. Submit a pull request  
-EOF
+
