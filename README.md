@@ -1,38 +1,153 @@
-# Doctor CLI - Environment Checker
+cat << 'EOF' > README.md
+# Doctor – Developer Environment Diagnostics
 
-Doctor is a CLI tool to check and fix your developer environment. It validates tools, ports, and dependencies to ensure your setup is ready.
+**Doctor** is a CLI tool for automatically checking, diagnosing, and fixing your developer environment. It ensures that all essential tools, databases, language runtimes, and DevOps utilities are installed, properly configured, and ready to use.  
 
-Usage:
-./doctor                     # interactive mode
-./doctor diagnose            # run full environment checks
-./doctor diagnose --json     # run checks and output JSON
-./doctor check <tool>        # check a single tool (docker, git, go, node, python3, sleep)
-./doctor check <tool> --version  # show version of a specific tool
-./doctor check <tool> --path     # show path of a specific tool
-./doctor fix                 # fix all actionable issues
-./doctor fix docker          # fix Docker only
-./doctor port <port>         # check a specific port
-./doctor list                # list all available checks
-./doctor version             # show Doctor version
-./doctor help                # show this help
+---
 
-Available Checks:
-docker
-git
-go
-node
-python3
-sleep
+## Features
 
-Notes:
-- Docker must be running for Docker checks/fixes.
-- Ports 3000 and 5432 are checked by default.
-- Interactive mode prompts you to fix issues automatically.
-- Auto-fix mode runs diagnose and applies fixes sequentially.
+- **Interactive mode**: Run `doctor` to see your environment status in a structured table.  
+- **Automatic fixes**: Instantly fix missing or misconfigured tools when supported.  
+- **Check individual tools**: Focus on a single tool with `doctor check <tool>`.  
+- **Full diagnostics**: Run `doctor diagnose` for a comprehensive environment report.  
+- **Cross-platform support**: Works on macOS, Linux, and Windows (with Homebrew, apt, or equivalent).  
+- **Dev toolkit coverage**: Includes databases, language runtimes, package managers, CI/CD tools, Kubernetes tools, and more.  
 
-Example workflow:
-1. ./doctor                  # see interactive overview
-2. ./doctor diagnose          # see status of all tools
-3. ./doctor fix               # fix all problems automatically
-4. ./doctor list              # list available checks
-5. ./doctor port 3000         # check if a port is free
+---
+
+## Installation
+
+Clone the repository and build the CLI:
+
+\`\`\`bash
+git clone https://github.com/paszed/doctor.git
+cd doctor
+go build -o doctor ./cmd/doctor
+\`\`\`
+
+Optional: add `doctor` to your PATH for global usage.
+
+---
+
+## Usage
+
+Run Doctor in interactive mode:
+
+\`\`\`bash
+./doctor
+\`\`\`
+
+Run full environment diagnostics:
+
+\`\`\`bash
+./doctor diagnose
+\`\`\`
+
+Check a single tool:
+
+\`\`\`bash
+./doctor check <tool>
+\`\`\`
+
+Fix all issues or a specific tool:
+
+\`\`\`bash
+./doctor fix
+./doctor fix <tool>
+\`\`\`
+
+Check a specific port:
+
+\`\`\`bash
+./doctor port 3000
+\`\`\`
+
+List all available checks:
+
+\`\`\`bash
+./doctor list
+\`\`\`
+
+Show Doctor version:
+
+\`\`\`bash
+./doctor version
+\`\`\`
+
+---
+
+## Example
+
+\`\`\`bash
+# Interactive check
+./doctor
+
+# Full diagnose
+./doctor diagnose
+
+# Check and fix Docker
+./doctor check docker
+./doctor fix docker
+
+# Check Python package managers
+./doctor check pipenv
+./doctor check poetry
+./doctor fix pipenv
+./doctor fix poetry
+\`\`\`
+
+---
+
+## Supported Tools
+
+**Languages & Runtimes**
+
+- Go
+- Java (OpenJDK)
+- Node.js / npm / pnpm / yarn
+- Python 3 / pip / pipenv / poetry
+- Ruby via rbenv
+
+**Databases**
+
+- PostgreSQL
+- MySQL
+- MongoDB
+- SQLite CLI
+- Redis
+- Oracle SQL CLI (`sqlplus`)
+
+**DevOps / CI/CD / Cloud**
+
+- Docker / Docker Compose
+- Kubernetes (`kubectl`, Kind, Minikube)
+- Helm
+- Terraform
+- AWS CLI
+- Azure CLI
+- Google Cloud CLI
+- GitHub CLI (`gh`)
+
+**Other Tools**
+
+- Maven
+- Ansible
+
+---
+
+## Notes
+
+- Some fixes (like Terraform, Kubernetes tools, Oracle SQL) may require manual installation or elevated permissions.  
+- For Python packages, `pipx` is recommended for system-managed Python installations.  
+- All interactive fixes show suggested installation commands when auto-fix isn’t available.  
+
+---
+
+## Contribution
+
+1. Fork the repository  
+2. Add new checks/fixes in `internal/checks` and `internal/fix`  
+3. Update `internal/cli/help.go` and the README  
+4. Submit a pull request  
+EOF
