@@ -3,29 +3,42 @@ package fix
 import (
 	"fmt"
 	"os/exec"
+	"runtime"
 )
 
-// FixPostgres attempts to check and guide installation of PostgreSQL
+// FixPostgres ensures PostgreSQL is installed and available in PATH
 func FixPostgres(args []string) error {
 	fmt.Println("[FIX] postgres")
 
-	// Check if psql is available
-	_, err := exec.LookPath("psql")
-	if err == nil {
+	// Check if PostgreSQL is installed
+	cmd := exec.Command("psql", "--version")
+	if err := cmd.Run(); err == nil {
 		fmt.Println("✓ PostgreSQL is already installed")
 		return nil
 	}
 
-	// Not found, print OS-specific instructions
-	fmt.Println("→ PostgreSQL not found.")
-	fmt.Println("  Please install PostgreSQL and ensure `psql` is in your PATH.")
-	fmt.Println("  On macOS: brew install postgresql")
-	fmt.Println("  On Linux (Debian/Ubuntu): sudo apt install postgresql postgresql-client")
-	fmt.Println("  On Windows: https://www.postgresql.org/download/windows/")
+	// Install depending on OS
+	if runtime.GOOS == "darwin" { // macOS
+		fmt.Println("→ PostgreSQL not found. Installing via Homebrew...")
+		err := exec.Command("brew", "install", "postgresql").Run()
+		if err != nil {
+			return fmt.Errorf("failed to install PostgreSQL via Homebrew: %w", err)
+		}
+	} else if runtime.GOOS == "linux" { // Linux
+		fmt.Println("→ PostgreSQL not found. Installing via apt...")
+		err := exec.Command("sudo", "apt", "install", "-y", "postgresql", "postgresql-client").Run()
+		if err != nil {
+			return fmt.Errorf("failed to install PostgreSQL via apt: %w", err)
+		}
+	} else {
+		fmt.Println("→ Please install PostgreSQL manually: https://www.postgresql.org/download/")
+	}
 
-	return fmt.Errorf("postgres not installed")
+	fmt.Println("✓ fix completed")
+	return nil
 }
 
+// Register the PostgreSQL fix
 func init() {
 	Register("postgres", FixPostgres)
 }

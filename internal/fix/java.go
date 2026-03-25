@@ -4,39 +4,41 @@ import (
 	"fmt"
 	"os/exec"
 	"runtime"
-	"strings"
 )
 
-// FixJava attempts to ensure Java is installed and available in PATH
+// FixJava ensures Java is installed and available in PATH
 func FixJava(args []string) error {
 	fmt.Println("[FIX] java")
 
-	// Try to check Java version
+	// Check if Java is already installed
 	cmd := exec.Command("java", "-version")
-	out, err := cmd.CombinedOutput()
-	if err == nil {
+	if err := cmd.Run(); err == nil {
 		fmt.Println("✓ Java is already installed")
 		return nil
 	}
 
-	// If not found, print installation instructions based on OS
-	fmt.Println("→ java not found.")
-	switch runtime.GOOS {
-	case "darwin":
-		fmt.Println("  On macOS: brew install openjdk")
-	case "linux":
-		fmt.Println("  On Linux (Debian/Ubuntu): sudo apt install openjdk-17-jdk")
-	case "windows":
-		fmt.Println("  On Windows: Download and install JDK from https://adoptopenjdk.net/")
-	default:
-		fmt.Println("  Please install JDK manually.")
+	// Install Java depending on the OS
+	if runtime.GOOS == "darwin" { // macOS
+		fmt.Println("→ Java not found. Installing via Homebrew...")
+		err := exec.Command("brew", "install", "openjdk").Run()
+		if err != nil {
+			return fmt.Errorf("failed to install Java via Homebrew: %w", err)
+		}
+	} else if runtime.GOOS == "linux" { // Linux
+		fmt.Println("→ Java not found. Installing via apt...")
+		err := exec.Command("sudo", "apt", "install", "-y", "default-jdk").Run()
+		if err != nil {
+			return fmt.Errorf("failed to install Java via apt: %w", err)
+		}
+	} else {
+		fmt.Println("→ Please install Java manually: https://www.java.com")
 	}
 
-	return fmt.Errorf("java not installed or not in PATH: %s", strings.TrimSpace(string(out)))
+	fmt.Println("✓ fix completed")
+	return nil
 }
 
-// Register Java fix
+// Register the Java fix on init
 func init() {
 	Register("java", FixJava)
 }
-
