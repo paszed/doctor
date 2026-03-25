@@ -20,11 +20,11 @@ cat << 'EOF' > README.md
 
 Clone the repository and build the CLI:
 
-\`\`\`bash
+```bash
 git clone https://github.com/paszed/doctor.git
 cd doctor
 go build -o doctor ./cmd/doctor
-\`\`\`
+```
 
 Optional: add `doctor` to your PATH for global usage.
 
@@ -34,52 +34,52 @@ Optional: add `doctor` to your PATH for global usage.
 
 Run Doctor in interactive mode:
 
-\`\`\`bash
+```bash
 ./doctor
-\`\`\`
+```
 
 Run full environment diagnostics:
 
-\`\`\`bash
+```bash
 ./doctor diagnose
-\`\`\`
+```
 
 Check a single tool:
 
-\`\`\`bash
+```bash
 ./doctor check <tool>
-\`\`\`
+```
 
 Fix all issues or a specific tool:
 
-\`\`\`bash
+```bash
 ./doctor fix
 ./doctor fix <tool>
-\`\`\`
+```
 
 Check a specific port:
 
-\`\`\`bash
+```bash
 ./doctor port 3000
-\`\`\`
+```
 
 List all available checks:
 
-\`\`\`bash
+```bash
 ./doctor list
-\`\`\`
+```
 
 Show Doctor version:
 
-\`\`\`bash
+```bash
 ./doctor version
-\`\`\`
+```
 
 ---
 
 ## Example
 
-\`\`\`bash
+```bash
 # Interactive check
 ./doctor
 
@@ -95,7 +95,7 @@ Show Doctor version:
 ./doctor check poetry
 ./doctor fix pipenv
 ./doctor fix poetry
-\`\`\`
+```
 
 ---
 
