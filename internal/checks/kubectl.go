@@ -35,4 +35,3 @@ func CheckKubectl() model.Result {
 func init() {
 	Register("kubectl", CheckKubectl)
 }
-

@@ -28,4 +28,3 @@ func FixKubectl(args []string) error {
 func init() {
 	Register("kubectl", FixKubectl)
 }
-
