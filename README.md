@@ -7,12 +7,12 @@ It ensures essential tools, databases, language runtimes, and DevOps utilities a
 
 ## ⚡ Features
 
-- 🖥️ **Interactive mode**: Run `./doctor` to see your environment status in a structured table.
-- 🛠️ **Automatic fixes**: Instantly fix missing or misconfigured tools when supported.
-- 🔍 **Check individual tools**: Focus on a single tool with `./doctor check <tool>`.
-- 📊 **Full diagnostics**: Run `./doctor diagnose` for a comprehensive environment report.
-- 🌎 **Cross-platform support**: Works on macOS, Linux, and Windows (with Homebrew, apt, or equivalent).
-- 🧰 **Dev toolkit coverage**: Includes databases, language runtimes, package managers, CI/CD tools, Kubernetes, and more.
+- **Interactive mode**: Run `./doctor` to see your environment status in a structured table.
+- **Automatic fixes**: Instantly fix missing or misconfigured tools when supported.
+- **Check individual tools**: Focus on a single tool with `./doctor check <tool>`.
+- **Full diagnostics**: Run `./doctor diagnose` for a comprehensive environment report.
+- **Cross-platform support**: Works on macOS, Linux, and Windows (with Homebrew, apt, or equivalent).
+- **Dev toolkit coverage**: Includes databases, language runtimes, package managers, CI/CD tools, Kubernetes, and more.
 
 ---
 
