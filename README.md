@@ -58,6 +58,10 @@ export PATH=$PATH:$(pwd)
 dist\doctor.exe
 ```
 
+```bash
+# Make Unix binaries executable
+chmod +x ./dist/doctor-mac ./dist/doctor-mac-intel ./dist/doctor-linux ./dist/doctor-linux-arm
+```
 ---
 
 ## 🚀 Usage
