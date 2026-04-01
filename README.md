@@ -18,15 +18,45 @@ It ensures essential tools, databases, language runtimes, and DevOps utilities a
 
 ## 📦 Installation
 
-Clone the repository and build the CLI:
+Clone the repository:
 
 ```bash
 git clone https://github.com/paszed/doctor.git
 cd doctor
+```
+
+### Option 1: Build from source (Go required)
+
+```bash
+# macOS / Linux / Windows (if Go is installed)
 go build -o doctor ./cmd/doctor
 ```
 
-Optional: add `doctor` to your PATH for global usage.
+This produces a `doctor` binary in the current folder. 
+Optionally, add it to your PATH for global usage:
+
+```bash
+export PATH=$PATH:$(pwd)
+```
+
+### Option 2: Use prebuilt binaries (no Go required)
+
+```bash
+# macOS Apple Silicon
+./dist/doctor-mac
+
+# macOS Intel
+./dist/doctor-mac-intel
+
+# Linux x86_64
+./dist/doctor-linux
+
+# Linux ARM64
+./dist/doctor-linux-arm
+
+# Windows x86_64
+dist\doctor.exe
+```
 
 ---
 
