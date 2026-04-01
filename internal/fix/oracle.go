@@ -1,30 +1,26 @@
 package fix
 
 import (
+	"fmt"
 	"os/exec"
-	"strings"
-
-	"github.com/paszed/doctor/internal/model"
 )
 
-func CheckOracle() model.Result {
+// FixOracle attempts to check if Oracle CLI is available
+func FixOracle(args []string) error {
+	fmt.Println("[FIX] oracle")
+
 	cmd := exec.Command("sqlplus", "-V")
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return model.Result{
-			Name:    "oracle",
-			Status:  model.Missing,
-			Message: "Oracle SQL CLI not installed or not in PATH",
-			Fix:     "Install Oracle Instant Client and ensure `sqlplus` is in PATH",
-		}
+	if err := cmd.Run(); err == nil {
+		fmt.Println("✓ Oracle CLI is already installed")
+		return nil
 	}
-	return model.Result{
-		Name:    "oracle",
-		Status:  model.OK,
-		Message: strings.TrimSpace(string(output)),
-	}
+
+	fmt.Println("→ Oracle CLI not found. Please install it manually:")
+	fmt.Println("   https://www.oracle.com/database/technologies/instant-client.html")
+	return nil
 }
 
+// init registers the fix
 func init() {
-	Register("oracle", CheckOracle)
+	Register("oracle", FixOracle)
 }
